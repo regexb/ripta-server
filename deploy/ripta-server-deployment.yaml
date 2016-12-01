@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ripta-server
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        version: alpha
+        tier: backend
+    spec:
+      containers:
+      - name: ripta-server
+        image: gcr.io/riptabot/ripta-server:alpha-0.0.3
+        env:
+        - name: MONGO_ADDR
+          value: mongo
+        - name: MAPS_API_KEY
+          value: AIzaSyBLkfEHV6n0MIevqnKgHAbFem6CxGZd9Iw
+        ports:
+        - containerPort: 8080
+        - containerPort: 9001

@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package pb;
+
+// Define the RIPTA service calls that are available.
+service Ripta {
+  rpc Geocode(GeocodeRequest) returns (GeocodeResponse) {}
+  rpc ListStops(ListStopsRequest) returns (StopsResponse) {}
+  rpc GetStopsByLocation(StopLocationRequest) returns (StopsResponse) {}
+  rpc RouteStopsByStopID(RouteStopRequest) returns (RouteStopsResponse) {}
+}
+
+message Location {
+  double lat = 1;
+  double long = 2;
+}
+
+message Stop {
+  string id = 1;
+  string stopId = 2;
+  string name = 3;
+  Location location = 4;
+  repeated string routes = 5;
+}
+
+message Geocode {
+  string address = 1;
+  double lat = 2;
+  double long = 3;
+}
+
+message GeocodeRequest {
+  string query = 1;
+}
+
+message GeocodeResponse {
+  repeated Geocode geocodes = 1;
+}
+
+message ListStopsRequest {}
+
+message StopLocationRequest {
+  string route = 1;
+  double lat = 2;
+  double long = 3;
+}
+
+message StopsResponse {
+  repeated Stop stop = 1;
+}
+
+message RouteStopTime {
+  string scheduleTime = 1;
+  string arrivalTime = 2;
+}
+
+message RouteStop {
+ string stopId = 1;
+ RouteStopTime time = 2;
+}
+
+message RouteStopRequest {
+  string routeId = 1;
+  string stopId = 2;
+}
+
+message RouteStopsResponse {
+  repeated RouteStop stop = 1;
+}

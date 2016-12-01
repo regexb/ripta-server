@@ -1,0 +1,14 @@
+# ripta-server:
+#   image: ripta-server
+#   environment:
+#     - MAPS_API_KEY=$MAPS_API_KEY
+#     - MONGO_ADDR=mongo
+#   ports:
+#     - "8080:8080"
+#     - "9001:9001"
+#   links:
+#     - mongo
+mongo:
+    image: mongo
+    ports:
+        - "27017:27017"
