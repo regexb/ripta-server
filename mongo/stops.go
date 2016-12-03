@@ -10,6 +10,19 @@ var (
 	stopDoc = "stop"
 )
 
+type geoJSON struct {
+	Type        string    `json:"-"`
+	Coordinates []float64 `json:"coordinates"`
+}
+
+type dbstop struct {
+	ID       bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	StopID   string        `json:"stop_id"`
+	Name     string        `json:"stop_name"`
+	Location geoJSON       `json:"location"`
+	Routes   []string      `json:"route_ids"`
+}
+
 type stopStore struct {
 	db      string
 	session *mgo.Session
@@ -72,13 +85,22 @@ func (s *stopStore) List() ([]*stop.Stop, error) {
 		}
 	}
 
-	var result []*stop.Stop
+	var stops []*dbstop
 	c := sess.DB(s.db).C(stopDoc)
-	err := c.Find(query).All(&result)
+	err := c.Find(query).All(&stops)
 	if err != nil {
 		return nil, stop.ErrRecordNotFound
 	}
-	return result, nil
+
+	var results []*stop.Stop
+	for _, s := range stops {
+		results = append(results, &stop.Stop{
+			ID:   s.StopID,
+			Name: s.Name,
+		})
+	}
+
+	return results, nil
 }
 
 // QueryByLocation retuns a list of all stops sorted by distance to
@@ -106,14 +128,22 @@ func (s *stopStore) QueryByLocation(lat, long float64) ([]*stop.Stop, error) {
 		query["routes"] = s.sopts.Route
 	}
 
-	var result []*stop.Stop
+	var stops []*dbstop
 	c := sess.DB(s.db).C(stopDoc)
-	err := c.Find(query).Limit(5).All(&result)
+	err := c.Find(query).Limit(5).All(&stops)
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	var results []*stop.Stop
+	for _, s := range stops {
+		results = append(results, &stop.Stop{
+			ID:   s.StopID,
+			Name: s.Name,
+		})
+	}
+
+	return results, nil
 }
 
 // GetByID returns a single stop by the db id. Will return nil

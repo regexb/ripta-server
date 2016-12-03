@@ -71,14 +71,8 @@ func EncodeGRPCListResponse(_ context.Context, response interface{}) (interface{
 
 	for _, s := range listResponse.Data {
 		pbStops = append(pbStops, &pb.Stop{
-			Id:     s.ID.String(),
-			StopId: s.StopID,
-			Name:   s.Name,
-			Location: &pb.Location{
-				Lat:  s.Location.Coordinates[0],
-				Long: s.Location.Coordinates[1],
-			},
-			Routes: s.Routes,
+			Id:   s.ID,
+			Name: s.Name,
 		})
 	}
 	return &pb.StopsResponse{pbStops}, nil
