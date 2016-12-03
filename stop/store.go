@@ -12,6 +12,7 @@ var (
 // Filter used for query
 type Filter struct {
 	Route     string
+	Direction string
 }
 
 // FilterOption type for setting up filters for queries
@@ -21,6 +22,12 @@ type FilterOption func(*Filter)
 func ByRoute(route string) FilterOption {
 	return func(o *Filter) {
 		o.Route = route
+	}
+}
+
+func ByDirection(direction string) FilterOption {
+	return func(o *Filter) {
+		o.Direction = direction
 	}
 }
 

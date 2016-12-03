@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/begizi/ripta-server/stop"
@@ -72,8 +73,11 @@ func (s *stopStore) QueryByLocation(lat, long float64) ([]*stop.Stop, error) {
 		PlaceholderFormat(sq.Dollar)
 
 	if s.sopts.Route != "" {
-		// queryBuilder = queryBuilder.Where(sq.Eq{"trips.direction_id": "B'?'"}, 0)
 		queryBuilder = queryBuilder.Where(sq.Eq{"trips.route_id": s.sopts.Route})
+	}
+
+	if s.sopts.Direction != "" {
+		queryBuilder = queryBuilder.Where(fmt.Sprintf("trips.direction_id = B'%v'", s.sopts.Direction))
 	}
 
 	query, args, err := queryBuilder.ToSql()

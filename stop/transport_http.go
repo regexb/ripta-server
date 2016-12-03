@@ -70,6 +70,7 @@ func DecodeHTTPListRequest(_ context.Context, r *http.Request) (request interfac
 // DecodeHTTPQueryByLocationRequest processes the HTTP request and returns the service request value
 func DecodeHTTPQueryByLocationRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
 	route := r.URL.Query().Get("route")
+	direction := r.URL.Query().Get("direction")
 	rawLocation := mux.Vars(r)["location"]
 	locationArray := strings.Split(rawLocation, ",")
 
@@ -89,7 +90,7 @@ func DecodeHTTPQueryByLocationRequest(_ context.Context, r *http.Request) (reque
 		return nil, fmt.Errorf("long must be a float. Got \"%s\"", locationArray[1])
 	}
 
-	return QueryByLocationRequest{route, lat, long}, nil
+	return QueryByLocationRequest{route, lat, long, direction}, nil
 }
 
 // EncodeHTTPJSONResponse processes the service response and writes it to the http response writter

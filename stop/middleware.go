@@ -58,6 +58,7 @@ func (mw serviceLoggingMiddleware) QueryByLocation(ctx context.Context, req Quer
 			"lat", req.Lat,
 			"long", req.Long,
 			"route", req.Route,
+			"direction", req.Direction,
 			"error", err,
 			"took", time.Since(begin),
 		)

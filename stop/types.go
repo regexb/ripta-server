@@ -6,9 +6,10 @@ type ListResponse struct {
 }
 
 type QueryByLocationRequest struct {
-	Route string  `json:"route"`
-	Lat   float64 `json:"lat"`
-	Long  float64 `json:"long"`
+	Route     string  `json:"route"`
+	Lat       float64 `json:"lat"`
+	Long      float64 `json:"long"`
+	Direction string  `json:"direction"`
 }
 
 // GetResponse for returning a sindle stop from an endpoint

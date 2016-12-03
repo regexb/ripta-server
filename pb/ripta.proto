@@ -36,6 +36,7 @@ message StopLocationRequest {
   string route = 1;
   double lat = 2;
   double long = 3;
+  string direction = 4;
 }
 
 message StopsResponse {
