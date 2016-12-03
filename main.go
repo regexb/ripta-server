@@ -50,7 +50,7 @@ func main() {
 	dbAddr := os.Getenv("DB_ADDR")
 	// default for db
 	if dbAddr == "" {
-		dbAddr = "postgresql://127.0.0.1/ripta?sslmode=disable"
+		dbAddr = "postgresql://postgres@127.0.0.1/ripta?sslmode=disable"
 	}
 
 	// Map Client
