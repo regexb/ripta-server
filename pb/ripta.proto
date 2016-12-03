@@ -10,17 +10,10 @@ service Ripta {
   rpc RouteStopsByStopID(RouteStopRequest) returns (RouteStopsResponse) {}
 }
 
-message Location {
-  double lat = 1;
-  double long = 2;
-}
-
 message Stop {
   string id = 1;
-  string stopId = 2;
-  string name = 3;
-  Location location = 4;
-  repeated string routes = 5;
+  string name = 2;
+  string description = 3;
 }
 
 message Geocode {
@@ -43,6 +36,7 @@ message StopLocationRequest {
   string route = 1;
   double lat = 2;
   double long = 3;
+  string direction = 4;
 }
 
 message StopsResponse {

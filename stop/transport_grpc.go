@@ -47,7 +47,7 @@ func (s *GRPCStopServer) GetStopsByLocation(ctx context.Context, req *pb.StopLoc
 // DecodeGRPCListRequest decodes request from pb type to service type
 func DecodeGRPCGetByLocationRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.StopLocationRequest)
-	return QueryByLocationRequest{req.Route, req.Lat, req.Long}, nil
+	return QueryByLocationRequest{req.Route, req.Lat, req.Long, req.Direction}, nil
 }
 
 // List transport handler
@@ -71,14 +71,9 @@ func EncodeGRPCListResponse(_ context.Context, response interface{}) (interface{
 
 	for _, s := range listResponse.Data {
 		pbStops = append(pbStops, &pb.Stop{
-			Id:     s.ID.String(),
-			StopId: s.StopID,
-			Name:   s.Name,
-			Location: &pb.Location{
-				Lat:  s.Location.Coordinates[0],
-				Long: s.Location.Coordinates[1],
-			},
-			Routes: s.Routes,
+			Id:          s.ID,
+			Name:        s.Name,
+			Description: s.Description,
 		})
 	}
 	return &pb.StopsResponse{pbStops}, nil

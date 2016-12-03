@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,15 +13,15 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"googlemaps.github.io/maps"
-	"gopkg.in/mgo.v2"
 
 	"github.com/begizi/ripta-server/geocode"
 	"github.com/begizi/ripta-server/inmem"
-	"github.com/begizi/ripta-server/mongo"
 	"github.com/begizi/ripta-server/pb"
+	"github.com/begizi/ripta-server/postgres"
 	"github.com/begizi/ripta-server/realtime"
 	"github.com/begizi/ripta-server/route"
 	"github.com/begizi/ripta-server/stop"
@@ -46,10 +47,10 @@ func main() {
 		gRPCPort = "9001"
 	}
 
-	mongoAddr := os.Getenv("MONGO_ADDR")
-	// default for mongo
-	if mongoAddr == "" {
-		mongoAddr = "127.0.0.1"
+	dbAddr := os.Getenv("DB_ADDR")
+	// default for db
+	if dbAddr == "" {
+		dbAddr = "postgresql://127.0.0.1/ripta?sslmode=disable"
 	}
 
 	// Map Client
@@ -62,19 +63,15 @@ func main() {
 	// Setup RealtimeClient
 	realtimeClient := realtime.NewClient(nil)
 
-	// Setup Mongo DB connection
-	session, err := mgo.Dial(mongoAddr)
+	// Setup DB connection
+	db, err := sql.Open("postgres", dbAddr)
 	if err != nil {
-		panic(fmt.Errorf("Failed to connect to mongodb store: Error %v", err))
+		panic(fmt.Errorf("Failed to initialize database connection: Error %v", err))
 	}
-	defer session.Close()
+	defer db.Close()
 
 	// Stores
-	stopStore, err := mongo.NewStopStore("ripta", session)
-	if err != nil {
-		panic(fmt.Errorf("Failed to initialize stop store: Error %v", err))
-	}
-
+	stopStore := postgres.NewStopStore(db)
 	realtimeStore := inmem.NewRealtimeStore(realtimeClient, 60*time.Second)
 
 	// Context
