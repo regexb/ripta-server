@@ -26,7 +26,7 @@ type dbstop struct {
 type stopStore struct {
 	db      string
 	session *mgo.Session
-	sopts   stop.Scope
+	sopts   stop.Filter
 }
 
 // NewStopStore returns an implimentation of the stop.Store interface
@@ -65,7 +65,7 @@ func NewStopStore(db string, session *mgo.Session) (stop.Store, error) {
 	return s, nil
 }
 
-func (s stopStore) Scope(opts ...stop.ScopeOption) stop.Store {
+func (s stopStore) Filter(opts ...stop.FilterOption) stop.Store {
 	for _, opt := range opts {
 		opt(&s.sopts)
 	}

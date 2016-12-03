@@ -17,7 +17,7 @@ type dbstop struct {
 
 type stopStore struct {
 	db    *sqlx.DB
-	sopts stop.Scope
+	sopts stop.Filter
 }
 
 // NewStopStore returns an implimentation of the stop.Store interface
@@ -28,7 +28,7 @@ func NewStopStore(db *sql.DB) stop.Store {
 	}
 }
 
-func (s stopStore) Scope(opts ...stop.ScopeOption) stop.Store {
+func (s stopStore) Filter(opts ...stop.FilterOption) stop.Store {
 	for _, opt := range opts {
 		opt(&s.sopts)
 	}

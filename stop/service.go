@@ -32,7 +32,7 @@ func (s stopService) List(_ context.Context) (*ListResponse, error) {
 }
 
 func (s stopService) QueryByLocation(_ context.Context, req QueryByLocationRequest) (*ListResponse, error) {
-	stops, err := s.store.Scope(ContainsRoute(req.Route)).QueryByLocation(req.Lat, req.Long)
+	stops, err := s.store.Filter(ByRoute(req.Route), ByDirection(req.Direction)).QueryByLocation(req.Lat, req.Long)
 	if err != nil {
 		return nil, err
 	}

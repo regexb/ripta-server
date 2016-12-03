@@ -9,17 +9,17 @@ var (
 	ErrRecordNotFound = errors.New("Record not found")
 )
 
-// Scope used for query
-type Scope struct {
-	Route string
+// Filter used for query
+type Filter struct {
+	Route     string
 }
 
-// ScopeOption type for setting up scopes for queries
-type ScopeOption func(*Scope)
+// FilterOption type for setting up filters for queries
+type FilterOption func(*Filter)
 
-// ContainsRoute scopes a query to return only stops that contain a specific route
-func ContainsRoute(route string) ScopeOption {
-	return func(o *Scope) {
+// ContainsRoute filters a query to return only stops that contain a specific route
+func ByRoute(route string) FilterOption {
+	return func(o *Filter) {
 		o.Route = route
 	}
 }
@@ -30,5 +30,5 @@ type Store interface {
 	GetByID(id string) (*Stop, error)
 	GetByStopID(stopID string) (*Stop, error)
 	QueryByLocation(lat, long float64) ([]*Stop, error)
-	Scope(options ...ScopeOption) Store
+	Filter(options ...FilterOption) Store
 }
