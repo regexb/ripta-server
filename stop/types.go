@@ -18,6 +18,7 @@ type GetResponse struct {
 
 // Stop contains the bus stop information
 type Stop struct {
-	ID   string `json:"stop_id"`
-	Name string `json:"stop_name"`
+	ID          string `json:"stop_id"`
+	Name        string `json:"stop_name"`
+	Description string `json:"stop_desc"`
 }

@@ -13,6 +13,7 @@ service Ripta {
 message Stop {
   string id = 1;
   string name = 2;
+  string description = 3;
 }
 
 message Geocode {
