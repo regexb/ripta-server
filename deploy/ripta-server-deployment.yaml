@@ -7,15 +7,15 @@ spec:
   template:
     metadata:
       labels:
-        version: alpha
+        version: production
         tier: backend
     spec:
       containers:
       - name: ripta-server
-        image: gcr.io/riptabot/ripta-server:alpha-0.0.3
+        image: gcr.io/riptabot/ripta-server:1.0.0
         env:
-        - name: MONGO_ADDR
-          value: mongo
+        - name: DB_ADDR
+          value: postgresql://postgres@postgres/ripta?sslmode=disable
         - name: MAPS_API_KEY
           value: AIzaSyBLkfEHV6n0MIevqnKgHAbFem6CxGZd9Iw
         ports:
