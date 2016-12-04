@@ -10,6 +10,7 @@ type InmemRealtimeStore struct {
 	client         *realtime.Client
 	tripupdates    *realtime.TripUpdates
 	tripupdatesExp time.Time
+	ropts          realtime.Filter
 }
 
 func NewRealtimeStore(client *realtime.Client, exp time.Duration) realtime.Store {
@@ -17,6 +18,13 @@ func NewRealtimeStore(client *realtime.Client, exp time.Duration) realtime.Store
 		client:  client,
 		expTime: exp,
 	}
+}
+
+func (r InmemRealtimeStore) Filter(opts ...realtime.FilterOption) realtime.Store {
+	for _, opt := range opts {
+		opt(&r.ropts)
+	}
+	return &r
 }
 
 func (r *InmemRealtimeStore) getTripUpdates() (*realtime.TripUpdates, error) {
@@ -32,6 +40,31 @@ func (r *InmemRealtimeStore) getTripUpdates() (*realtime.TripUpdates, error) {
 	return r.tripupdates, nil
 }
 
+func filterTripUpdatesByRoute(tripUpdates []*realtime.TripUpdate, routeID string) []*realtime.TripUpdate {
+	updates := []*realtime.TripUpdate{}
+	for _, t := range tripUpdates {
+		if t.Trip.RouteID == routeID {
+			updates = append(updates, t)
+		}
+	}
+	return updates
+}
+
+func filterTripUpdatesByStop(tripUpdates []*realtime.TripUpdate, stopID string) []*realtime.TripUpdate {
+	updates := []*realtime.TripUpdate{}
+	for _, t := range tripUpdates {
+		stops := []*realtime.StopTimeUpdate{}
+		for _, stopTimeUpdate := range t.StopTimeUpdates {
+			if stopTimeUpdate.StopID == stopID {
+				stops = append(stops, stopTimeUpdate)
+			}
+		}
+		t.StopTimeUpdates = stops
+		updates = append(updates, t)
+	}
+	return updates
+}
+
 func (r *InmemRealtimeStore) GetTripUpdates() ([]*realtime.TripUpdate, error) {
 	tripupdates, err := r.getTripUpdates()
 	if err != nil {
@@ -42,20 +75,14 @@ func (r *InmemRealtimeStore) GetTripUpdates() ([]*realtime.TripUpdate, error) {
 	for _, t := range tripupdates.TripEntity {
 		updates = append(updates, t.TripUpdate)
 	}
-	return updates, nil
-}
 
-func (r *InmemRealtimeStore) GetTripUpdatesByRouteID(routeID string) ([]*realtime.TripUpdate, error) {
-	tripupdates, err := r.getTripUpdates()
-	if err != nil {
-		return nil, err
+	if r.ropts.Route != "" {
+		updates = filterTripUpdatesByRoute(updates, r.ropts.Route)
 	}
 
-	updates := []*realtime.TripUpdate{}
-	for _, t := range tripupdates.TripEntity {
-		if t.TripUpdate.Trip.RouteID == routeID {
-			updates = append(updates, t.TripUpdate)
-		}
+	if r.ropts.Stop != "" {
+		updates = filterTripUpdatesByStop(updates, r.ropts.Stop)
 	}
+
 	return updates, nil
 }

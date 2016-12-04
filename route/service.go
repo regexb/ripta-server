@@ -26,7 +26,7 @@ type routeService struct {
 }
 
 func (s *routeService) StopsByStopID(ctx context.Context, routeID, stopID string) ([]*Stop, error) {
-	tripUpdates, err := s.store.GetTripUpdatesByRouteID(routeID)
+	tripUpdates, err := s.store.Filter(realtime.ByRoute(routeID), realtime.ByStop(stopID)).GetTripUpdates()
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (s *routeService) StopsByStopID(ctx context.Context, routeID, stopID string
 	stops := []*Stop{}
 	for _, tripUpdate := range tripUpdates {
 		for _, stopTimeUpdate := range tripUpdate.StopTimeUpdates {
-			if stopTimeUpdate.StopID == stopID && stopTimeUpdate.Arrival != nil {
+			if stopTimeUpdate.Arrival != nil {
 				arrivalTime := time.Time(stopTimeUpdate.Arrival.Time)
 				timeWithDelay := arrivalTime.Add(time.Duration(stopTimeUpdate.Arrival.Delay) * time.Second)
 				stops = append(stops, &Stop{
