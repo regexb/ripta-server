@@ -38,6 +38,7 @@ riptaserver:
   autoredeploy: true
   environment:
     - 'DB_ADDR=postgres://postgres@postgres/ripta?sslmode=disable'
+    - EXCLUDE_PORTS=9001
     - FORCE_SSL=yes
     - MAPS_API_KEY=
     - 'VIRTUAL_HOST=https://api.*'
