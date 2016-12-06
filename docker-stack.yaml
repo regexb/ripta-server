@@ -3,6 +3,7 @@ haproxy:
   links:
     - letsencrypt
     - riptabot
+    - riptaserver
   ports:
     - '80:80'
     - '443:443'
@@ -12,7 +13,7 @@ haproxy:
     - letsencrypt
 letsencrypt:
   environment:
-    - DOMAINS=bot.brianegizi.com
+    - 'DOMAINS=riptabot.com,api.riptabot.com'
     - EMAIL=me@brianegizi.com
   expose:
     - '80'
@@ -22,23 +23,28 @@ postgres:
     - '5432'
   image: 'mdillon/postgis:latest'
 riptabot:
+  autoredeploy: true
   environment:
     - APP_ID=
     - APP_PASSWORD=
     - FORCE_SSL=yes
     - 'SERVER_ADDR=riptaserver:9001'
     - 'VIRTUAL_HOST=*,https://*'
-  image: 'begizi/riptabot:1.0.0'
+  image: 'begizi/riptabot:1.0.1'
   links:
     - riptaserver
+  restart: on-failure
 riptaserver:
+  autoredeploy: true
   environment:
     - 'DB_ADDR=postgres://postgres@postgres/ripta?sslmode=disable'
+    - FORCE_SSL=yes
     - MAPS_API_KEY=
+    - 'VIRTUAL_HOST=https://api.*'
   expose:
+    - '8080'
     - '9001'
   image: 'begizi/ripta-server:1.0.1'
   links:
     - postgres
-  ports:
-    - '8080:8080'
+  restart: on-failure
