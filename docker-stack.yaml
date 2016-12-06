@@ -1,0 +1,44 @@
+haproxy:
+  image: 'interaction/haproxy:master'
+  links:
+    - letsencrypt
+    - riptabot
+  ports:
+    - '80:80'
+    - '443:443'
+  roles:
+    - global
+  volumes_from:
+    - letsencrypt
+letsencrypt:
+  environment:
+    - DOMAINS=bot.brianegizi.com
+    - EMAIL=me@brianegizi.com
+  expose:
+    - '80'
+  image: 'interaction/letsencrypt:master'
+postgres:
+  expose:
+    - '5432'
+  image: 'mdillon/postgis:latest'
+riptabot:
+  environment:
+    - APP_ID=
+    - APP_PASSWORD=
+    - FORCE_SSL=yes
+    - 'SERVER_ADDR=riptaserver:9001'
+    - 'VIRTUAL_HOST=*,https://*'
+  image: 'begizi/riptabot:1.0.0'
+  links:
+    - riptaserver
+riptaserver:
+  environment:
+    - 'DB_ADDR=postgres://postgres@postgres/ripta?sslmode=disable'
+    - MAPS_API_KEY=
+  expose:
+    - '9001'
+  image: 'begizi/ripta-server:1.0.1'
+  links:
+    - postgres
+  ports:
+    - '8080:8080'
